@@ -1,0 +1,30 @@
+# docker-compose.yml
+# Docker Compose Quickstart: https://docs.docker.com/compose/gettingstarted/
+
+services:
+  # Servicio del backend
+  backend:
+    build: ./backend                    # Dónde está el Dockerfile
+    container_name: docker-demo-backend # Nombre del contenedor
+    ports:
+      - "8000:8000"                     # Puerto host:contenedor
+    environment:
+      - ENV=development                 # Variables de entorno
+    networks:
+      - app-network                     # Red interna
+
+  # Servicio del frontend
+  frontend:
+    build: ./frontend
+    container_name: docker-demo-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend                         # Espera que backend esté listo
+    networks:
+      - app-network
+
+# Red para que los servicios se comuniquen
+networks:
+  app-network:
+    driver: bridge

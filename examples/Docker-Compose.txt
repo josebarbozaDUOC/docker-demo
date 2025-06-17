@@ -1,0 +1,250 @@
+# Docker Compose - Plantilla Universal
+# ====================================
+# Docs: https://docs.docker.com/compose/
+
+# ESTRUCTURA BÁSICA:
+# services:     Define cada contenedor
+# networks:     Cómo se comunican entre sí
+# volumes:      Datos persistentes
+# secrets:      Información sensible
+
+services:
+  # ======================
+  # BACKEND/API
+  # ======================
+  backend:
+    # Opción 1: Construir desde Dockerfile local
+    build: ./backend
+    
+    # Opción 2: Usar imagen de Docker Hub
+    # image: node:18-alpine
+    
+    # Nombre del contenedor (opcional)
+    container_name: mi-backend
+    
+    # Mapeo de puertos - host:contenedor
+    ports:
+      - "8000:8000"
+    
+    # Variables de entorno
+    environment:
+      # Hardcodeadas (NO recomendado para producción)
+      - ENV=development              # development, staging, production
+      - DEBUG=true
+      - DATABASE_URL=postgresql://user:pass@db:5432/mydb
+      
+    # Archivo de variables de entorno (recomendado)
+    # env_file:
+    #   - .env
+    #   - .env.local
+    
+    # Dependencias - espera que otros servicios estén listos
+    depends_on:
+      - database
+      # Forma avanzada con health check:
+      # database:
+      #   condition: service_healthy
+    
+    # Red(es) a las que pertenece
+    networks:
+      - app-network
+    
+    # Volúmenes - para persistencia o desarrollo
+    volumes:
+      # Desarrollo con hot-reload
+      - ./backend/app:/app
+      # Logs persistentes
+      - ./logs:/app/logs
+      # Volumen nombrado
+      - uploads:/app/uploads
+    
+    # Reinicio automático
+    restart: unless-stopped
+    # Opciones: no, always, on-failure, unless-stopped
+    
+    # Comando personalizado (sobrescribe CMD del Dockerfile)
+    # command: npm run dev
+    
+    # Healthcheck
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+
+  # ======================
+  # FRONTEND
+  # ======================
+  frontend:
+    build: ./frontend
+    container_name: mi-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    environment:
+      # URLs de APIs para el frontend
+      - REACT_APP_API_URL=http://backend:8000
+      - VUE_APP_API_URL=http://backend:8000
+
+  # ======================
+  # BASE DE DATOS
+  # ======================
+  database:
+    # PostgreSQL
+    image: postgres:15-alpine
+    # MySQL: image: mysql:8.0
+    # MongoDB: image: mongo:6.0
+    # Redis: image: redis:7-alpine
+    
+    container_name: mi-database
+    
+    # Variables específicas de cada DB
+    environment:
+      # PostgreSQL
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=mydb
+      
+      # MySQL
+      # - MYSQL_ROOT_PASSWORD=rootpass
+      # - MYSQL_DATABASE=mydb
+      # - MYSQL_USER=myuser
+      # - MYSQL_PASSWORD=mypass
+      
+      # MongoDB
+      # - MONGO_INITDB_ROOT_USERNAME=admin
+      # - MONGO_INITDB_ROOT_PASSWORD=pass
+    
+    # Puertos - solo exponer en desarrollo
+    ports:
+      - "5432:5432"  # PostgreSQL
+      # - "3306:3306"  # MySQL
+      # - "27017:27017"  # MongoDB
+    
+    # Volumen para persistencia
+    volumes:
+      # Volumen nombrado (recomendado)
+      - postgres_data:/var/lib/postgresql/data
+      # MySQL: - mysql_data:/var/lib/mysql
+      # MongoDB: - mongo_data:/data/db
+      
+      # Scripts de inicialización
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    
+    networks:
+      - app-network
+    
+    # Healthcheck para bases de datos
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser"]
+      # MySQL: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      # MongoDB: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ======================
+  # SERVICIOS ADICIONALES
+  # ======================
+  
+  # Cache/Redis
+  cache:
+    image: redis:7-alpine
+    container_name: mi-cache
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+    volumes:
+      - redis_data:/data
+
+  # Message Queue (RabbitMQ)
+  # rabbitmq:
+  #   image: rabbitmq:3-management
+  #   ports:
+  #     - "5672:5672"     # AMQP
+  #     - "15672:15672"   # Management UI
+  #   environment:
+  #     - RABBITMQ_DEFAULT_USER=admin
+  #     - RABBITMQ_DEFAULT_PASS=admin
+
+  # Nginx como Reverse Proxy
+  # nginx:
+  #   image: nginx:alpine
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+  #     - ./nginx/ssl:/etc/nginx/ssl
+  #   depends_on:
+  #     - backend
+  #     - frontend
+
+# ======================
+# REDES
+# ======================
+networks:
+  # Red personalizada para comunicación interna
+  app-network:
+    # driver: bridge es el default - crea red aislada
+    driver: bridge
+    # Otras opciones:
+    # driver: host    # Usa la red del host
+    # driver: none    # Sin red
+    # driver: overlay # Para Docker Swarm
+    
+    # Configuración avanzada
+    # ipam:
+    #   config:
+    #     - subnet: 172.20.0.0/16
+
+  # Red externa existente
+  # external-network:
+  #   external: true
+  #   name: mi-red-existente
+
+# ======================
+# VOLÚMENES
+# ======================
+volumes:
+  # Volúmenes nombrados - Docker los gestiona
+  postgres_data:
+  mysql_data:
+  mongo_data:
+  redis_data:
+  uploads:
+  
+  # Volumen con driver específico
+  # nfs_data:
+  #   driver: local
+  #   driver_opts:
+  #     type: nfs
+  #     o: addr=10.0.0.1,rw
+  #     device: ":/path/to/dir"
+
+# ======================
+# CONFIGURACIÓN GLOBAL
+# ======================
+
+# Archivo .env de ejemplo:
+# PORT=8000
+# DB_HOST=database
+# DB_USER=myuser
+# DB_PASS=mypassword
+# JWT_SECRET=super-secret-key
+# NODE_ENV=development
+
+# COMANDOS ÚTILES:
+# ================
+# docker-compose up -d                    # Levantar en background
+# docker-compose logs -f service_name     # Ver logs
+# docker-compose exec backend sh          # Entrar al contenedor
+# docker-compose down                     # Detener todo
+# docker-compose down -v                  # Detener y borrar volúmenes
+# docker-compose ps                       # Ver estado
+# docker-compose build --no-cache         # Rebuild sin cache
+# docker-compose config                   # Validar sintaxis

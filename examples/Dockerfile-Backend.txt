@@ -1,0 +1,104 @@
+# Dockerfile para Backend - Plantilla Universal
+# =============================================
+
+# EJEMPLOS DE IMÁGENES BASE POR LENGUAJE:
+# ========================================
+# Python: FROM python:3.11-slim
+# Node.js: FROM node:18-alpine
+# Java Spring: FROM openjdk:17-alpine o FROM eclipse-temurin:17-jre-alpine
+# C# (.NET): FROM mcr.microsoft.com/dotnet/aspnet:7.0
+# Go: FROM golang:1.21-alpine AS builder + FROM alpine:latest
+# Ruby: FROM ruby:3.2-slim
+# PHP: FROM php:8.2-fpm-alpine
+# Rust: FROM rust:1.70 AS builder + FROM debian:bookworm-slim
+
+FROM python:3.11-slim
+
+# Instalar dependencias del sistema si es necesario
+# Python con PostgreSQL: RUN apt-get update && apt-get install -y libpq-dev
+# Node con compilación: RUN apk add --no-cache python3 make g++
+# Java: generalmente no necesita extras
+
+WORKDIR /app
+
+# GESTIÓN DE DEPENDENCIAS POR LENGUAJE:
+# =====================================
+# Python:
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Node.js:
+# COPY package*.json ./
+# RUN npm ci --only=production
+
+# Java (Maven):
+# COPY pom.xml .
+# RUN mvn dependency:go-offline
+
+# Java (Gradle):
+# COPY build.gradle .
+# COPY gradle gradle
+# RUN ./gradlew dependencies
+
+# C# (.NET):
+# COPY *.csproj ./
+# RUN dotnet restore
+
+# Go:
+# COPY go.mod go.sum ./
+# RUN go mod download
+
+# Copiar código fuente
+COPY ./app ./app
+# Node.js: COPY . .
+# Java: COPY src ./src
+# C#: COPY . .
+# Go: COPY . .
+
+# COMPILACIÓN (si es necesaria):
+# ==============================
+# Java Maven: RUN mvn package -DskipTests
+# Java Gradle: RUN ./gradlew build -x test
+# C#: RUN dotnet publish -c Release -o out
+# Go: RUN go build -o main .
+# TypeScript: RUN npm run build
+
+# Puerto común por tecnología
+EXPOSE 8000
+# Node.js: EXPOSE 3000
+# Java Spring: EXPOSE 8080
+# C# (.NET): EXPOSE 80 o 5000
+# Go: EXPOSE 8080
+
+# COMANDOS DE EJECUCIÓN POR LENGUAJE:
+# ===================================
+# Python FastAPI:
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# Python Flask:
+# CMD ["python", "app.py"]
+# CMD ["gunicorn", "-b", "0.0.0.0:8000", "app:app"]
+
+# Node.js:
+# CMD ["node", "server.js"]
+# CMD ["npm", "start"]
+
+# Java:
+# CMD ["java", "-jar", "target/app.jar"]
+# CMD ["java", "-jar", "/app/build/libs/app.jar"]
+
+# C# (.NET):
+# CMD ["dotnet", "out/MyApp.dll"]
+
+# Go:
+# CMD ["./main"]
+
+# PHP:
+# CMD ["php-fpm"]
+
+# VARIABLES DE ENTORNO COMUNES:
+# =============================
+# ENV NODE_ENV=production
+# ENV PYTHONUNBUFFERED=1
+# ENV JAVA_OPTS="-Xmx512m -Xms256m"
+# ENV ASPNETCORE_URLS=http://+:80
