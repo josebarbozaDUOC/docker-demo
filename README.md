@@ -1,30 +1,57 @@
 # docker-demo
 
 Proyecto de aprendizaje Docker con arquitectura multi-container.
+- Código comentado como referencia futura. `Dockerfile`, `docker-compose.yml`
+- Se agregan ejemplos útiles para comprender cada parte del flujo. `examples/`
+- Un solo comando levanta toda la aplicación.
 
-- **backend**: REST API (FastAPI)
-- **frontend**: Web simple
-- **database**: SQLite
+**Servicios del proyecto:**
+- **backend**: API REST (FastAPI, SQLAlchemy, SQLite)
+- **frontend**: Web App simple de notas adhesivas (HTML/CSS/JS, Bootstrap + Animate)
+- **database**: SQLite embebido (persistencia local en archivo `.db`)
 
+
+## 🚀 Inicio Rápido
+```
+# Clonar el proyecto
+git clone https://github.com/josebarbozaDUOC/docker-demo.git
+cd docker-demo
+
+# Levantar la aplicación
+docker-compose up
+
+# Acceder a:
+# - Frontend: http://localhost:3000
+# - API Docs: http://localhost:8000/docs
+```
 
 ## Estructura:
 ```
 docker-demo/
-├── docker-compose.yml
+├── docker-compose.yml          # Gestor multi container (back + front + db)
+├── .gitignore
 ├── README.md
+│ 
 ├── backend/
-│   ├── Dockerfile
-│   ├── requirements.txt
+│   ├── Dockerfile              # Contenedor Backend en multicapas
+│   ├── requirements.txt        # Dependencias
+│   ├── .env                    # Variables entorno
 │   └── app/
 │       ├── __init__.py
-│       └── main.py
+│       ├── main.py             # FastAPI, model, routes
+│       ├── config.py           # Define DB
+│       └── database.py         # SQLAlchemy
+│ 
 ├── frontend/
-│   ├── Dockerfile
+│   ├── Dockerfile              # Contenedor Frontend nginx
 │   └── static/
 │       ├── index.html
 │       ├── style.css
 │       └── script.js
-└── database/
+│ 
+├── database/
+│   └── sticky_notes.db
+│ 
 └── examples/
     ├── Docker-Compose.txt
     ├── Dockerfile-Backend.txt
@@ -137,7 +164,11 @@ docker run -p 8000:8000 -v $(pwd)/app:/app/app docker-demo-backend
 ## Próximos pasos
 - [x] Dockerizar servicios individuales
 - [x] Implementar Docker Compose
-- [ ] Migrar modelo Task → StickyNote
-- [ ] Rediseñar frontend con grid de notas adhesivas
-- [ ] Agregar persistencia con SQLite
-- [ ] Implementar variables de entorno con .env
+- [x] Agregar examples
+- [x] Migrar modelo Task → StickyNote
+- [x] Rediseñar frontend con grid de notas adhesivas
+- [x] Agregar persistencia con SQLite
+- [x] Implementar variables de entorno con .env
+- [x] Deploy (acceso por IP desde otro dispositivo en la misma red)
+- [ ] PostgreSQL (docker-compose)
+- [ ] Redis (cache/sessions)

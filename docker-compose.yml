@@ -1,5 +1,7 @@
 # docker-compose.yml
 # Docker Compose Quickstart: https://docs.docker.com/compose/gettingstarted/
+# Bridge network driver: https://docs.docker.com/engine/network/drivers/bridge/
+# Separación de networks, así frontend no tiene comunicación con DB expuesta (Aislamiento de responsabilidades).
 
 services:
   # Servicio del backend
@@ -8,23 +10,35 @@ services:
     container_name: docker-demo-backend # Nombre del contenedor
     ports:
       - "8000:8000"                     # Puerto host:contenedor
+    volumes:
+      - ./backend/app:/app/app          # Hot reload del código
+      - ./database:/app/database        # Persistencia de SQLite
     environment:
-      - ENV=development                 # Variables de entorno
+      - DATABASE_URL=sqlite:///./database/sticky_notes.db   # Variables de entorno
+    env_file:
+      - ./backend/.env                  # Archivo de variables
     networks:
-      - app-network                     # Red interna
+      #- app-network                     # Red interna
+      - backend-db                      # Red interna con DB (al integrar otras DB)
+      - frontend-backend                # Red expuesta a frontend
 
   # Servicio del frontend
   frontend:
     build: ./frontend
     container_name: docker-demo-frontend
     ports:
-      - "3000:80"
+      - "3000:80"                       # Puerto mapeado, del 80, al 3000
     depends_on:
       - backend                         # Espera que backend esté listo
     networks:
-      - app-network
+      #- app-network
+      - frontend-backend                # Solo puede ver el backend
 
 # Red para que los servicios se comuniquen
 networks:
-  app-network:
+  #app-network:                         # se puede usar solo una conexión app-network.
+    #driver: bridge
+  frontend-backend:
+    driver: bridge
+  backend-db:
     driver: bridge

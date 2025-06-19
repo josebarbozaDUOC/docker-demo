@@ -1,82 +1,267 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* style.css */
+
+/* Variables de colores */
+:root {
+    --note-yellow: #fef3c7;
+    --note-pink: #fce7f3;
+    --note-blue: #dbeafe;
+    --note-green: #d1fae5;
+    --note-orange: #fed7aa;
 }
 
+/* Fuente global, estilo escritura a mano */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-    padding: 20px;
+    font-family: 'Kalam', cursive;
 }
 
-.container {
-    max-width: 500px;
-    margin: 0 auto;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-h1 {
-    color: #333;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.add-task {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-#taskInput {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-button {
-    padding: 10px 20px;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-button:hover {
-    background: #0056b3;
-}
-
-#taskList {
-    list-style: none;
-}
-
-.task-item {
-    display: flex;
-    justify-content: space-between;
+/* Navbar centrado */
+.navbar > .container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    padding: 10px;
-    margin-bottom: 10px;
-    background: #f8f9fa;
-    border-radius: 5px;
 }
 
-.task-item:hover {
-    background: #e9ecef;
+.navbar-brand {
+    font-family: 'Sigmar', cursive !important;
+    font-size: 2rem !important;
+    color: #374151 !important;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+    grid-column: 2;
+    justify-self: center;
 }
 
-.delete-btn {
-    background: #dc3545;
-    padding: 5px 10px;
-    font-size: 14px;
+.navbar-brand:hover {
+    transform: scale(1.05);
 }
 
-.delete-btn:hover {
-    background: #c82333;
+#note-count {
+    grid-column: 3;
+    justify-self: end;
+}
+
+/* Animación del ícono */
+.navbar-icon {
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover .navbar-icon {
+    transform: rotate(-5deg) scale(1.05);
+}
+
+/* Grid de notas con tamaño fijo */
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 280px);
+    gap: 1.5rem;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+/* Sticky Notes */
+.sticky-note {
+    width: 280px;
+    height: 280px;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+/* Rotaciones para efecto realista */
+.sticky-note:nth-child(4n+1) { transform: rotate(-2deg); }
+.sticky-note:nth-child(4n+2) { transform: rotate(1deg); }
+.sticky-note:nth-child(4n+3) { transform: rotate(-1deg); }
+.sticky-note:nth-child(4n) { transform: rotate(2deg); }
+
+.sticky-note:hover {
+    transform: rotate(0deg) scale(1.05);
+    z-index: 10;
+}
+
+/* Colores de notas */
+.note-yellow, .sticky-note.yellow { background-color: var(--note-yellow) !important; }
+.note-pink, .sticky-note.pink { background-color: var(--note-pink) !important; }
+.note-blue, .sticky-note.blue { background-color: var(--note-blue) !important; }
+.note-green, .sticky-note.green { background-color: var(--note-green) !important; }
+.note-orange, .sticky-note.orange { background-color: var(--note-orange) !important; }
+
+/* Contenido de nota */
+.note-content {
+    min-height: 180px;
+    outline: none;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #374151;
+    overflow-y: auto;
+}
+
+.note-content:empty:before {
+    content: "Haz clic para editar...";
+    color: #9ca3af;
+}
+
+/* Botones de color */
+.color-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50% !important;
+    border-width: 3px !important;
+}
+
+.color-btn:checked {
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.2);
+}
+
+/* Opciones de color en dropdown */
+.color-option {
+    width: 28px;
+    height: 28px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    padding: 0;
+}
+
+.color-option:hover {
+    border-color: #374151;
+}
+
+/* Estilo del botón cambiar color */
+.color-change-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.sticky-note:hover .color-change-btn {
+    opacity: 1;
+}
+
+/* Botón eliminar más sutil */
+.sticky-note .btn-close {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.sticky-note:hover .btn-close {
+    opacity: 0.5;
+}
+
+.sticky-note .btn-close:hover {
+    opacity: 1;
+}
+
+/* Filtros activos */
+.filter-btn.active {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: white !important;
+}
+
+/* Textarea mejorado */
+#note-input {
+    font-family: 'Kalam', cursive;
+    font-size: 1.1rem;
+    resize: none;
+}
+
+#note-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+}
+
+/* Animación de shake para error */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Toast notifications */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    min-width: 250px;
+    z-index: 1050;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    /* Navbar responsive */
+    .navbar > .container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .navbar-brand {
+        margin-bottom: 0.5rem;
+    }
+    
+    #note-count {
+        font-size: 0.875rem;
+    }
+    
+    /* Grid de notas */
+    .notes-grid {
+        grid-template-columns: repeat(auto-fill, 240px);
+        gap: 1rem;
+        padding: 1rem 0.5rem;
+    }
+    
+    .sticky-note {
+        width: 240px;
+        height: 240px;
+    }
+    
+    /* Ajustar el contenido para que quepa */
+    .sticky-note .card-body {
+        padding: 1rem !important;
+    }
+    
+    .note-content {
+        min-height: 140px;
+        font-size: 1rem;
+        line-height: 1.4;
+    }
+    
+    /* Footer más compacto */
+    .sticky-note .card-footer {
+        padding: 0.5rem 1rem !important;
+        min-height: auto;
+    }
+    
+    /* Fecha más pequeña */
+    .note-date {
+        font-size: 0.75rem;
+    }
+    
+    /* Botón de color más pequeño */
+    .color-change-btn {
+        font-size: 1rem;
+        padding: 0;
+    }
+}
+
+/* Para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .notes-grid {
+        grid-template-columns: repeat(auto-fill, 200px);
+    }
+    
+    .sticky-note {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .note-content {
+        min-height: 110px;
+        font-size: 0.9rem;
+    }
 }

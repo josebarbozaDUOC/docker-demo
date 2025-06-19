@@ -1,0 +1,24 @@
+# .gitignore
+# Python
+__pycache__/
+*.pyc
+.env
+*.db
+*.sqlite
+*.sqlite3
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+
+# Database
+database/*.db
+database/*.sqlite
+database/*.sqlite3
+
+# Logs
+*.log
+
+# Docker
+.docker/
