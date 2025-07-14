@@ -25,6 +25,15 @@ docker-compose up
 # - API Docs: http://localhost:8000/docs
 ```
 
+## Capturas
+
+- Frontend
+![image](https://github.com/user-attachments/assets/1c065d93-0603-41d3-b4cb-22af576d983b)
+
+- docker-compose up
+![image](https://github.com/user-attachments/assets/8245b5bb-86a8-4d2f-8a3f-07dc621fe587)
+
+
 ## Estructura:
 ```
 docker-demo/
@@ -162,13 +171,13 @@ docker run -p 8000:8000 -v $(pwd)/app:/app/app docker-demo-backend
 - **Documentación API**: http://localhost:8000/docs
 
 ## Próximos pasos
-- [x] Dockerizar servicios individuales
-- [x] Implementar Docker Compose
-- [x] Agregar examples
-- [x] Migrar modelo Task → StickyNote
-- [x] Rediseñar frontend con grid de notas adhesivas
-- [x] Agregar persistencia con SQLite
-- [x] Implementar variables de entorno con .env
-- [x] Deploy (acceso por IP desde otro dispositivo en la misma red)
-- [ ] PostgreSQL (docker-compose)
-- [ ] Redis (cache/sessions)
+- ✔ Dockerizar servicios individuales
+- ✔ Implementar Docker Compose
+- ✔ Agregar examples
+- ✔ Migrar modelo Task → StickyNote
+- ✔ Rediseñar frontend con grid de notas adhesivas
+- ✔ Agregar persistencia con SQLite
+- ✔ Implementar variables de entorno con .env
+- ✔ Deploy (acceso por IP desde otro dispositivo en la misma red)
+- X PostgreSQL (docker-compose)
+- X Redis (cache/sessions)
