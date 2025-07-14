@@ -10,11 +10,24 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from .database import get_db, DBStickyNote
 from .config import get_settings
+from urllib.parse import urlparse
+from contextlib import asynccontextmanager
+import os
 
 settings = get_settings()
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Crear carpeta de base de datos si no existe
+    settings = get_settings()
+    parsed_url = urlparse(settings.database_url.replace("sqlite:///", "file:///"))
+    db_dir = os.path.dirname(parsed_url.path)
+    os.makedirs(db_dir, exist_ok=True)
+    print('APP INICIADA, TODO LISTO, DB EN RUTA: ', db_dir)
+    yield  # Continúa la ejecución de la app
+
 # Inicializar FastAPI con configuración
-app = FastAPI(title=settings.app_name)
+app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
 # Configurar CORS
 app.add_middleware(

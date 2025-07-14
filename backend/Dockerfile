@@ -4,7 +4,7 @@
 
 # FROM especifica la imagen base para construir nuestro contenedor
 # Imagen base - Python 3.11 (versión lts, más estable)
-# Opciones: python:3.11 (1GB~), python:3.11-slim (300MB~), python:3.11-alpine (100MB~)
+# Opciones: python:3.11 (1GB~), python:3.11-slim (150MB~), python:3.11-alpine (50MB~)
 # slim es buen balance entre tamaño y compatibilidad
 FROM python:3.13-slim
 
